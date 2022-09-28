@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, {useState, useEffect} from 'react';
 import Table from './Table'
 import Form from './Form';
+import axios from 'axios';
 
 function MyApp() {
   const [characters, setCharacters] = useState([]);
@@ -16,12 +17,30 @@ function MyApp() {
     setCharacters([...characters, person]);
   }
 
+  useEffect(() => {
+    fetchAll().then(result => {
+      if (result)
+          setCharacters(result);
+    });
+  }, [] );
+
   return (
     <div className="container">
       <Table characterData={characters} removeCharacter={removeOneCharacter} />
       <Form handleSubmit={updateList} />
     </div>
   );
+}
+
+async function fetchAll() {
+  try {
+     const response = await axios.get('http://localhost:5000/users');
+     return response.data.users_list;     
+  }
+  catch (error) {
+     console.log(error); 
+     return false;         
+  }
 }
 
 export default MyApp;
