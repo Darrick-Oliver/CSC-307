@@ -25,7 +25,7 @@ app.get('/users', (req: Request, res: Response) => {
         };
         res.send(response);
     }
-    else{
+    else {
         res.send(users);
     }
 });
@@ -42,6 +42,16 @@ app.get('/users/:id', (req: Request, res: Response) => {
         res.send(response);
     }
 });
+
+app.post('/users', (req: Request, res: Response) => {
+    const userToAdd: User = req.body;
+    addUser(userToAdd);
+    res.status(200).end();
+});
+
+function addUser(user: User){
+    users['users_list'].push(user);
+}
 
 function findUserById(id: string) {
     return users['users_list'].find( (user) => user['id'] === id);
