@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 5000;
 
@@ -10,6 +11,7 @@ interface User {
     job: string
 }
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/', (_req: Request, res: Response) => {
