@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { v4 as uuidv4 } from 'uuid';
 
 const express = require('express');
 const cors = require('cors');
@@ -54,22 +55,26 @@ app.get('/users/:id', (req: Request, res: Response) => {
 
 app.post('/users', (req: Request, res: Response) => {
     const userToAdd: User = req.body;
-    addUser(userToAdd);
-    res.status(200).end();
+    const updatedUser = addUser(userToAdd);
+    res.status(201).send(updatedUser);
 });
 
-app.delete('/users', (req: Request, res: Response) => {
-    const id = req.query.id;
+app.delete('/users/:id', (req: Request, res: Response) => {
+    const id = req.params['id'];
     const result = removeUser(String(id));
     if (result == undefined)
         res.status(404).send('Resource not found.');
     else {
-        res.status(200).end();
+        res.status(204).end();
     }
 });
 
 const addUser = (user: User) => {
+    // Generate an id for user
+    user['id'] = uuidv4();
+
     users['users_list'].push(user);
+    return user;
 }
 
 const removeUser = (id: string) => {

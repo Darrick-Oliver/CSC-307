@@ -1,20 +1,60 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from './Table'
 import Form from './Form';
 import axios from 'axios';
 
+async function makePostCall(person){
+  try {
+     const response = await axios.post('http://localhost:5000/users', person);
+     return response;
+  }
+  catch (error) {
+     console.log(error);
+     return false;
+  }
+}
+
+const makeDeleteCall = async (id) => {
+  try {
+    const response = await axios.delete(`http://localhost:5000/users/${id}`);
+    return response;
+  }
+  catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+async function fetchAll() {
+  try {
+     const response = await axios.get('http://localhost:5000/users');
+     return response.data.users_list;     
+  }
+  catch (error) {
+     console.log(error); 
+     return false;         
+  }
+}
+
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
-  function removeOneCharacter (index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index
-    });
-    setCharacters(updated);
+  const removeOneCharacter = async (index) => {
+    makeDeleteCall(characters[index].id).then(result => {
+      if (result && result.status === 204) {
+        const updated = characters.filter((character, i) => {
+          return i !== index
+        });
+        setCharacters(updated);
+      }
+    })
   }
 
-  function updateList(person) {
-    setCharacters([...characters, person]);
+  const updateList = (person) => { 
+    makePostCall(person).then(result => {
+      if (result && result.status === 201)
+        setCharacters([...characters, result.data] );
+    });
   }
 
   useEffect(() => {
@@ -32,15 +72,5 @@ function MyApp() {
   );
 }
 
-async function fetchAll() {
-  try {
-     const response = await axios.get('http://localhost:5000/users');
-     return response.data.users_list;     
-  }
-  catch (error) {
-     console.log(error); 
-     return false;         
-  }
-}
 
 export default MyApp;
